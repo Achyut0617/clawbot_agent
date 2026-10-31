@@ -1,0 +1,8 @@
+﻿{
+  "project_name": "Voice-Activated Clawbot Agent",
+  "mode": "simulation",
+  "audio_sample_rate": 16000,
+  "audio_channels": 1,
+  "robot_hardware_enabled": false,
+  "max_action_duration_ms": 3000
+}
