@@ -1,0 +1,31 @@
+app:
+  name: ClawBot
+  log_level: INFO
+  data_dir: ""  # Empty means OS-specific user data directory.
+
+orchestration:
+  provider: openclaw
+  mode: cli
+  command: openclaw
+  timeout_seconds: 180
+  # OpenClaw owns model/provider configuration. Do not put API keys here.
+
+voice:
+  enabled: true
+  backend: vosk
+  model_path: models/vosk/vosk-model-small-en-us-0.15
+  sample_rate: 16000
+  channels: 1
+  capture_seconds: 6
+  tts_enabled: true
+  # Push-to-talk is the default. Wake-word support is an optional future adapter.
+
+safety:
+  require_approval: true
+  allow_shell_tools: false
+  hardware_enabled: false
+  max_task_chars: 4000
+
+models:
+  ollama_url: http://127.0.0.1:11434
+  ollama_model: qwen2.5:1.5b

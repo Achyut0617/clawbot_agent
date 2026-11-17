@@ -1,74 +1,113 @@
-# Voice-Activated Clawbot Agent
+# ClawBot Agent
 
-## Project Overview
+Cross-platform, local-first voice and text assistant with OpenClaw orchestration.
 
-A locally running, voice-controlled robotic agent prototype developed using Python on Windows. The system integrates speech recognition, local LLM-powered instruction interpretation, structured action planning, safety validation, simulated robot execution, and text-to-speech feedback.
+> This is an integration foundation, not yet a fully autonomous desktop operator.
+> Physical robot control is disabled. Voice is optional; text input always works.
 
-**Current Operating Mode:** Simulation only. Physical hardware and motor control are disabled.
+## What is included
+- Unified text-first interactive CLI (`clawbot chat`)
+- Optional offline Vosk push-to-talk (`/voice`)
+- OpenClaw CLI adapter (`openclaw agent --message ...`)
+- Explicit approval required by default
+- SQLite task and event history
+- OS-specific data directory
+- Setup and diagnostics commands
+- CI matrix for Windows, Linux and macOS
+- Tagged GitHub Release workflow
+- Atomic development ledger (`ROADMAP.yaml`)
 
-## System Architecture
+## Requirements
+- Python 3.11+
+- OpenClaw installed and onboarded
+- Node.js version required by the current OpenClaw release
+- Optional: microphone, Vosk model and voice extras
 
-The agent follows a multi-stage processing pipeline:
+## Install
 
-### 1. Voice Input and Speech Recognition
+### Windows PowerShell
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,voice]"
+```
 
-**Microphone → Vosk Speech Recognition → Instruction Safety Gate**
+Install OpenClaw using its official PowerShell installer:
+```powershell
+iwr -useb https://openclaw.ai/install.ps1 | iex
+openclaw onboard
+openclaw gateway status
+```
 
-- Captures voice commands through the microphone.
-- Uses Vosk for offline speech-to-text conversion.
-- Passes recognized instructions through an initial safety gate.
-- Blocks ambiguous or potentially unsafe instructions and requests clarification when necessary.
+### Linux / macOS
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,voice]"
+```
 
-### 2. AI-Based Action Planning
+Install OpenClaw using its official installer:
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw onboard
+openclaw gateway status
+```
 
-**Validated Instruction → Ollama (Qwen 2.5:1.5B) → Structured JSON Action Plan**
+### Install ClawBot with helper scripts
+- Linux/macOS: `bash scripts/install.sh`
+- Windows: `.\scripts\install.ps1`
 
-- Uses a locally hosted LLM through Ollama.
-- Interprets natural-language instructions and determines the intended robot actions.
-- Converts instructions into structured JSON action plans.
-- Supports predefined robot actions with relevant parameters, such as movement direction and duration.
+The helper scripts install ClawBot only; OpenClaw onboarding remains a separate, interactive step.
 
-### 3. Safety Validation and Execution
+## Run
+```bash
+clawbot doctor
+clawbot chat
+```
 
-**JSON Action Plan → Safety Validator → Simulated Robot Execution**
+Commands inside the chat:
+- Type any task to send it to OpenClaw (approval required by default).
+- `/voice` captures one voice command if microphone + Vosk are installed.
+- `/history` lists recent tasks.
+- `/help` lists commands.
+- `/quit` exits.
 
-- Validates generated action plans against predefined safety rules.
-- Rejects unsupported actions, invalid parameters, and unsafe execution requests.
-- Allows only explicitly permitted actions to proceed.
-- Executes approved actions in a simulated environment.
-- Physical motor commands are not transmitted to any hardware.
+One-shot task:
+```bash
+clawbot run "Explain the architecture of this repository" --approve
+```
 
-### 4. Voice Feedback
+Without `--approve`, one-shot execution records the task and reports that approval is required.
 
-**Execution Result → Text-to-Speech → Audio Feedback**
+## Voice model
+Download the Vosk small English model from the official Vosk model catalogue and extract it to:
+`models/vosk/vosk-model-small-en-us-0.15/`
 
-- Converts execution results into natural-language responses.
-- Provides audio feedback about successful actions, rejected commands, or clarification requirements.
-- Completes the interaction loop between the user and the robotic agent.
+Voice is optional. If no microphone, audio library, or model exists, use typed commands. TTS failure does not stop the agent.
 
-## Technology Stack
+## Configuration
+Defaults are in `config/settings.yaml`. Environment variables override settings:
+- `CLAWBOT_OPENCLAW_COMMAND`
+- `CLAWBOT_OPENCLAW_TIMEOUT`
+- `CLAWBOT_REQUIRE_APPROVAL`
+- `CLAWBOT_VOSK_MODEL_PATH`
+- `CLAWBOT_TTS_ENABLED`
 
-| Component | Technology |
-|---|---|
-| Programming Language | Python |
-| Speech Recognition | Vosk |
-| Local LLM Runtime | Ollama |
-| Language Model | Qwen 2.5 (1.5B) |
-| Action Planning | Structured JSON |
-| Safety Layer | Custom Python Safety Gate and Validator |
-| Testing | Python `unittest` |
-| Operating Environment | Windows |
+OpenClaw model/provider credentials are configured by OpenClaw itself, not duplicated in ClawBot.
 
-## Safety and Execution Scope
+## Development
+```bash
+python -m pip install -e ".[dev]"
+ruff check .
+pytest
+```
+See `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, `docs/DEVELOPMENT.md` and `ROADMAP.yaml`.
 
-The project implements a layered safety architecture:
-
-1. **Instruction-Level Safety:** Filters ambiguous or unsafe natural-language commands.
-2. **Plan-Level Validation:** Checks generated JSON action plans before execution.
-3. **Execution Restriction:** Allows only supported actions in simulation mode.
-
-**Important:** This is currently a software simulation prototype. Real-world robot movement, motor actuation, and hardware integration are not enabled.
-
-## Project Objective
-
-To develop a locally operated, voice-driven robotic agent that can understand natural-language instructions, translate them into structured actions, validate those actions through an independent safety layer, and provide interactive voice feedback without depending on cloud-based AI services.
+## Current limitations / next milestones
+- Session continuity needs verification against the installed OpenClaw CLI version.
+- Gateway health and auth diagnostics are not yet queried through a dedicated API.
+- Push-to-talk is implemented; always-on wake-word and hotkey listener are roadmap items.
+- FastAPI service, GUI, packaged binaries and Jetson-specific setup profile are roadmap items.
+- The previous Streamlit prototype and robot simulator are retained in the source snapshot, but this new `src/clawbot` runtime is the recommended entry point.

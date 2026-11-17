@@ -1,0 +1,108 @@
+schema_version: 1
+project: clawbot_agent
+release_target: 0.2.0
+statuses: [backlog, in_progress, blocked, review, done]
+commit_convention: "type(ATOMIC-ID): concise imperative description"
+workstreams:
+  - id: CORE
+    name: Agent runtime and configuration
+    items:
+      - id: CORE-001
+        title: Introduce unified runtime
+        status: done
+        commit: "feat(CORE-001): introduce unified agent runtime"
+      - id: CORE-002
+        title: Centralize typed configuration
+        status: done
+        commit: "feat(CORE-002): centralize typed configuration"
+      - id: CORE-003
+        title: Add persistent SQLite task and event ledger
+        status: done
+        commit: "feat(CORE-003): add persistent task ledger"
+  - id: ORCH
+    name: OpenClaw integration
+    items:
+      - id: ORCH-001
+        title: Add OpenClaw CLI adapter
+        status: done
+        commit: "feat(ORCH-001): integrate OpenClaw CLI adapter"
+      - id: ORCH-002
+        title: Validate real gateway session continuity
+        status: backlog
+        commit: "test(ORCH-002): verify OpenClaw session continuity"
+      - id: ORCH-003
+        title: Add managed gateway health diagnostics
+        status: backlog
+        commit: "feat(ORCH-003): add gateway health diagnostics"
+  - id: INPUT
+    name: Voice and text interaction
+    items:
+      - id: INPUT-001
+        title: Always-available text command loop
+        status: done
+        commit: "feat(INPUT-001): add text-first command loop"
+      - id: VOICE-001
+        title: Optional microphone detection and Vosk push-to-talk
+        status: done
+        commit: "feat(VOICE-001): add optional voice capture"
+      - id: VOICE-002
+        title: Add wake-word listener with CPU and privacy controls
+        status: backlog
+        commit: "feat(VOICE-002): add optional wake-word listener"
+      - id: VOICE-003
+        title: Add configurable keyboard hotkey listener
+        status: backlog
+        commit: "feat(VOICE-003): add keyboard hotkey adapter"
+      - id: VOICE-004
+        title: Add streaming ASR and partial transcript UI
+        status: backlog
+        commit: "feat(VOICE-004): add streaming speech recognition"
+  - id: SAFE
+    name: Security and execution policy
+    items:
+      - id: SAFE-001
+        title: Require explicit approval by default
+        status: done
+        commit: "feat(SAFE-001): require explicit task approval"
+      - id: SAFE-002
+        title: Add tool allowlist and capability profiles
+        status: backlog
+        commit: "feat(SAFE-002): add capability-based tool permissions"
+      - id: SAFE-003
+        title: Add audit log export and redaction
+        status: backlog
+        commit: "feat(SAFE-003): add auditable event export"
+  - id: INSTALL
+    name: Device setup and packaging
+    items:
+      - id: INSTALL-001
+        title: Add cross-platform setup and doctor commands
+        status: done
+        commit: "feat(INSTALL-001): add cross-platform setup checks"
+      - id: INSTALL-002
+        title: Add Windows PowerShell installer
+        status: backlog
+        commit: "feat(INSTALL-002): add Windows installer"
+      - id: INSTALL-003
+        title: Add Linux and Jetson setup profiles
+        status: backlog
+        commit: "feat(INSTALL-003): add Linux and Jetson profiles"
+      - id: INSTALL-004
+        title: Publish signed standalone application builds
+        status: backlog
+        commit: "build(INSTALL-004): package cross-platform binaries"
+  - id: CI
+    name: Continuous integration and delivery
+    items:
+      - id: CI-001
+        title: Add cross-platform CI matrix
+        status: done
+        commit: "ci(CI-001): add cross-platform test matrix"
+      - id: CI-002
+        title: Add dependency and secret scanning
+        status: backlog
+        commit: "ci(CI-002): add security scanning"
+      - id: CI-003
+        title: Build and publish tagged releases
+        status: done
+        commit: "ci(CI-003): add tagged release workflow"
